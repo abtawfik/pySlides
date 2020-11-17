@@ -6,10 +6,9 @@ from setuptools import find_packages, setup
 #####################
 # required packages #
 #####################
-install_reqs = ['pandas==1.1.3',
-                'numpy==1.19.1',
+install_reqs = ['Jinja2==2.11.2',
                 'toolz==0.10.0',
-                'pyarrow==2.0.0']
+                'plotly==4.12.0']
 extras_require={'all':['pytest==6.0.1']}
 
 
@@ -45,4 +44,6 @@ setup(name='pyslides',
                    'Programming Language :: Python :: Implementation :: PyPy'],
       python_requires='>=3.6',
       install_requires=install_reqs,
-      extras_require=extras_require)
+      extras_require=extras_require,
+      include_package_data=True,
+      package_data={'': ['data/base.html']})

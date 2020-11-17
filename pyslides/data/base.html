@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- SEO -->
+    <title>Data Analysis</title>
+    <meta name="description" content="Presenting data with respect">
+
+    <!-- 
+    <script>window.dpLocal = true;</script>
+    <link href="https://datapane.com/static/base.css" rel="stylesheet"/>
+    <link href="https://datapane.com/static/report-base.css" rel="stylesheet"/>
+    <script src="https://datapane.com/static/base.js"></script>
+    <script src="https://datapane.com/static/report-base.js"></script>
+    -->
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,700,700i%7CMaitree:200,300,400,600,700&amp;subset=latin-ext" rel="stylesheet">
+
+    <!-- CSS WebSlides -->
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/npm/webslides@1.5.0/static/css/webslides.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.54.7/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+   
+  </head>
+  <body>
+
+    <main role="main">
+      <article id="webslides" class="horizontal">
+        <!------------>
+        <!-- Slides -->
+        <!------------>
+	{% for slide in slides %}
+        <section>
+	  {{ slide }}
+	</section>
+	{% endfor %}
+      </article>
+      <!-- end article -->
+    </main>
+    <!-- end main -->
+
+
+    <!-- Required -->
+    <script src="https://cdn.jsdelivr.net/npm/webslides@1.5.0/static/js/webslides.min.js"></script>
+    <script>window.ws = new WebSlides();</script>
+    
+  </body>
+</html>
