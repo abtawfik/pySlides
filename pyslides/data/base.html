@@ -35,7 +35,7 @@
 	{% for slide in slides %}
         <section>
 	  <div class="wrap">
-            <h4>{{ slide('title',<div></div>) }}</h4>
+            <h4>{{ slide.get('title','<div></div>') }}</h4>
             <p>{{ slide.get('content','<div></div>') }}</p>
 	    {{ slide.get('figure','<div></div>') }}
           </div>
