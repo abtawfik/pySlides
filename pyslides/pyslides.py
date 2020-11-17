@@ -1,7 +1,7 @@
 ######################
 # Standard libraries #
 ######################
-import dataclasses import dataclass
+from dataclasses import dataclass
 
 #####################
 # Package resources #
