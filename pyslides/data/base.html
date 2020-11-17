@@ -34,7 +34,11 @@
         <!------------>
 	{% for slide in slides %}
         <section>
-	  {{ slide }}
+	  <div class="wrap">
+            <h4>{{ slide('title',<div></div>) }}</h4>
+            <p>{{ slide.get('content','<div></div>') }}</p>
+	    {{ slide.get('figure','<div></div>') }}
+          </div>
 	</section>
 	{% endfor %}
       </article>

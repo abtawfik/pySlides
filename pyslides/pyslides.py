@@ -20,9 +20,11 @@ class Slides(object):
                  styles=None):
         self.header = header
         self.styles = styles
+        self.slides = []
         
-    def add(self):
-        pass
+    def add(self, title, content, layout, figure):
+        self.slides += [{'title':title, 'content':content, 'layout':layout, 'figure':figure}]
+        return self
 
     def save(self, outname):
         '''Save the slides to an html file
@@ -44,6 +46,15 @@ class Slides(object):
                           autoescape=select_autoescape(['html', 'xml']))
         template = env.get_template('base.html')
         plotly_html_args = dict(full_html=False, include_mathjax=False, include_plotlyjs=False)
+        #--------------------------------
+        # Render and output slides
+        #--------------------------------
+        msg = template.render(slides=self.slides)
+        #---------------------------------------------#
+        #             Render the report               # 
+        #---------------------------------------------#
+        with open(outname, 'w') as f:
+            f.write(msg)
         return None
 
 
