@@ -18,12 +18,16 @@ class Slides(object):
     def __init__(self,
                  header=None,
                  styles=None):
-        self.header = header
+        self.header = {} if header is None or not isinstance(header,dict) else header
         self.styles = styles
         self.slides = []
         
-    def add(self, title, content, layout, figure):
-        self.slides += [{'title':title, 'content':content, 'layout':layout, 'figure':figure}]
+    def add(self, title, subtitle, content, layout, figure):
+        self.slides += [{'title':title,
+                         'subtitle':subtitle,
+                         'content':content,
+                         'layout':layout,
+                         'figure':figure}]
         return self
 
     def save(self, outname):
@@ -49,7 +53,8 @@ class Slides(object):
         #--------------------------------
         # Render and output slides
         #--------------------------------
-        msg = template.render(slides=self.slides)
+        msg = template.render(slides=self.slides,
+                              head=self.header)
         #---------------------------------------------#
         #             Render the report               # 
         #---------------------------------------------#
