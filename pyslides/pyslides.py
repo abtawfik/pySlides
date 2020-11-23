@@ -2,6 +2,7 @@
 # Standard libraries #
 ######################
 from dataclasses import dataclass
+from typing import Any
 
 #####################
 # Package resources #
@@ -23,11 +24,11 @@ class Slides(object):
         self.slides = []
         
     def add(self, title, subtitle, content, layout, figure):
-        self.slides += [{'title':title,
-                         'subtitle':subtitle,
-                         'content':content,
-                         'layout':layout,
-                         'figure':figure}]
+        self.slides += [{'title'   : title,
+                         'subtitle': subtitle,
+                         'content' : content,
+                         'layout'  : layout,
+                         'figure'  : PlotlyFigure(figure).figure}]
         return self
 
     def save(self, outname):
@@ -49,7 +50,6 @@ class Slides(object):
         env = Environment(loader=file_loader,
                           autoescape=select_autoescape(['html', 'xml']))
         template = env.get_template('base.html')
-        plotly_html_args = dict(full_html=False, include_mathjax=False, include_plotlyjs=False)
         #--------------------------------
         # Render and output slides
         #--------------------------------
@@ -62,10 +62,15 @@ class Slides(object):
             f.write(msg)
         return None
 
-
+@dataclass
+class PlotlyFigure:
+    figure : Any
+    def __post_init__(self):
+        plotly_html_args = dict(full_html=False, include_mathjax=False, include_plotlyjs=False)
+        self.figure = self.figure.to_html(**plotly_html_args)
+        
 @dataclass
 class Slide:
     layout : str
     
-
 
