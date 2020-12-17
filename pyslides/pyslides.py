@@ -23,12 +23,14 @@ class Slides(object):
         self.styles = styles
         self.slides = []
         
-    def add(self, title, subtitle, content, layout, figure):
-        self.slides += [{'title'   : title,
-                         'subtitle': subtitle,
-                         'content' : content,
-                         'layout'  : layout,
-                         'figure'  : PlotlyFigure(figure).figure}]
+    def add(self, title=None, subtitle=None, content=None, layout=None, figure=None):
+        slide = {'title'   : title,
+                 'subtitle': subtitle,
+                 'content' : content,
+                 'layout'  : layout,
+                 'figure'  : PlotlyFigure(figure).figure}
+        slide = {k:v for k,v in slide.items() if v is not None}
+        self.slides += [slide]
         return self
 
     def save(self, outname):
@@ -47,8 +49,8 @@ class Slides(object):
         # Create a Jinja2 template environment
         #-----------------------------------------
         file_loader = PackageLoader(__name__, 'data')
-        env = Environment(loader=file_loader,
-                          autoescape=select_autoescape(['html', 'xml']))
+        env = Environment(loader=file_loader)#,
+                          #autoescape=select_autoescape(['html', 'xml']))
         template = env.get_template('base.html')
         #--------------------------------
         # Render and output slides
