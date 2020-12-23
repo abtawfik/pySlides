@@ -23,12 +23,19 @@ class Slides(object):
         self.styles = styles
         self.slides = []
         
-    def add(self, title=None, subtitle=None, content=None, layout=None, figure=None):
-        slide = {'title'   : title,
-                 'subtitle': subtitle,
-                 'content' : content,
-                 'layout'  : layout,
-                 'figure'  : PlotlyFigure(figure).figure}
+    def add(self,
+            title=None,
+            subtitle=None,
+            content=None,
+            layout=None,
+            figure=None,
+            head_style=None):
+        slide = {'title'      : title,
+                 'head_style' : Styler(head_style).to_string if head_style is not None else None,
+                 'subtitle'   : subtitle,
+                 'content'    : content,
+                 'layout'     : layout,
+                 'figure'     : PlotlyFigure(figure).figure if figure is not None else None}
         slide = {k:v for k,v in slide.items() if v is not None}
         self.slides += [slide]
         return self
@@ -49,14 +56,13 @@ class Slides(object):
         # Create a Jinja2 template environment
         #-----------------------------------------
         file_loader = PackageLoader(__name__, 'data')
-        env = Environment(loader=file_loader)#,
-                          #autoescape=select_autoescape(['html', 'xml']))
+        env = Environment(loader=file_loader)
         template = env.get_template('base.html')
         #--------------------------------
         # Render and output slides
         #--------------------------------
         msg = template.render(slides=self.slides,
-                              head=self.header)
+                              header=self.header)
         #---------------------------------------------#
         #             Render the report               # 
         #---------------------------------------------#
@@ -70,7 +76,13 @@ class PlotlyFigure:
     def __post_init__(self):
         plotly_html_args = dict(full_html=False, include_mathjax=False, include_plotlyjs=False)
         self.figure = self.figure.to_html(**plotly_html_args)
-        
+
+@dataclass
+class Styler:
+    style : dict
+    def __post_init__(self):
+        self.to_string = ''.join([item+':'+value+';' for item,value in self.style.items()])
+
 @dataclass
 class Slide:
     layout : str
