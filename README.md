@@ -17,7 +17,7 @@ pyslide sample-page
 
 ## Example
 
-pyslides makes it easy to build interactive html presentationsStreamlit makes it incredibly easy to build interactive apps:
+pyslides makes it easy to build interactive html presentations:
 
 ```python
 import pyslides as pys
