@@ -1,0 +1,119 @@
+/*
+ * Corporate Minimal Theme for pySlides
+ *
+ * Clean, minimalist theme for professional presentations
+ */
+
+:root {
+    --primary-color: #1a1a1a;
+    --secondary-color: #666666;
+    --accent-color: #e74c3c;
+    --text-color: #2c2c2c;
+    --background-color: #fafafa;
+}
+
+/* Custom background for all slides */
+.reveal {
+    background-color: var(--background-color);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Headings */
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+    color: var(--primary-color);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+}
+
+.reveal h1 {
+    font-size: 3em;
+    line-height: 1.2;
+}
+
+.reveal h2 {
+    font-size: 2em;
+    margin-bottom: 1em;
+    position: relative;
+}
+
+.reveal h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--accent-color);
+}
+
+/* Text */
+.reveal p, .reveal li {
+    color: var(--text-color);
+    font-size: 1.2em;
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+/* Links */
+.reveal a {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.reveal a:hover {
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* Lists */
+.reveal ul, .reveal ol {
+    margin-left: 0;
+}
+
+.reveal li {
+    margin-bottom: 0.5em;
+}
+
+/* Progress bar */
+.reveal .progress {
+    background: rgba(0, 0, 0, 0.05);
+    height: 3px;
+}
+
+.reveal .progress span {
+    background: var(--accent-color);
+}
+
+/* Controls */
+.reveal .controls {
+    color: var(--primary-color);
+}
+
+/* Slide numbers */
+.reveal .slide-number {
+    color: var(--secondary-color);
+    font-family: monospace;
+}
+
+/* Code blocks */
+.reveal pre {
+    background-color: #f0f0f0;
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+}
+
+.reveal code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Blockquotes */
+.reveal blockquote {
+    border-left: 4px solid var(--accent-color);
+    padding-left: 1em;
+    font-style: italic;
+    color: var(--secondary-color);
+}

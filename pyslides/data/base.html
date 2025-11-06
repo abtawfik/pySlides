@@ -2,51 +2,174 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO -->
     <title>{{ header.get('title', 'PySlides') }}</title>
-    <meta name="description" content={{ header.get('content', 'Presentations with respect') }}>
+    <meta name="description" content="{{ header.get('description', 'Interactive presentations with Python') }}">
+    <meta name="author" content="{{ header.get('author', '') }}">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,700,700i%7CMaitree:200,300,400,600,700&amp;subset=latin-ext" rel="stylesheet">
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/{{ theme }}.css" id="theme">
 
-    <!-- CSS WebSlides -->
-    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/npm/webslides@1.5.0/static/css/webslides.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.54.7/plotly.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-   
+    <!-- Syntax highlighting (optional) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+    <!-- Plotly.js for interactive charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- MathJax for LaTeX support -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Custom CSS -->
+    {% if custom_css %}
+    <style>
+      {{ custom_css }}
+    </style>
+    {% endif %}
   </head>
+
   <body>
+    <div class="reveal">
+      <div class="slides">
+        {% for slide in slides %}
+        <section{% if slide.get('background') %} data-background="{{ slide.background }}"{% endif %}{% if slide.get('background_color') %} data-background-color="{{ slide.background_color }}"{% endif %}{% if slide.get('transition') %} data-transition="{{ slide.transition }}"{% endif %}{% if slide.get('vertical') %} data-auto-animate{% endif %}>
 
-    <main role="main">
-      <article id="webslides" class="horizontal">
-        <!------------>
-        <!-- Slides -->
-        <!------------>
-	{% for slide in slides %}
-        <section>
-	  <header style={{ slide.get('head_style','') }}>
-	    <div class="wrap">
-              <h2><b>{{ slide.get('title','<div></div>') }}</b></h2>
-	    </div>
-	  </header>
-	  <div class="wrap">
-            <h3>{{ slide.get('subtitle','<div></div>') }}</h3>
-            <p>{{ slide.get('content','<div></div>') }}</p>
-	    {{ slide.get('figure','<div></div>') }}
+          {% if slide.get('layout') == 'title' %}
+          <!-- Title Slide Layout -->
+          <h1>{{ slide.get('title', '') }}</h1>
+          {% if slide.get('subtitle') %}
+          <h3>{{ slide.get('subtitle', '') }}</h3>
+          {% endif %}
+          {% if slide.get('author') %}
+          <p><small>{{ slide.author }}</small></p>
+          {% endif %}
+
+          {% elif slide.get('layout') == 'two-column' %}
+          <!-- Two Column Layout -->
+          {% if slide.get('title') %}
+          <h2>{{ slide.title }}</h2>
+          {% endif %}
+          <div class="r-hstack">
+            <div style="flex: 1; padding: 0 1em;">
+              {% if slide.get('content_left') %}
+              {{ slide.content_left }}
+              {% endif %}
+              {% if slide.get('figure_left') %}
+              {{ slide.figure_left }}
+              {% endif %}
+            </div>
+            <div style="flex: 1; padding: 0 1em;">
+              {% if slide.get('content_right') %}
+              {{ slide.content_right }}
+              {% endif %}
+              {% if slide.get('figure_right') %}
+              {{ slide.figure_right }}
+              {% endif %}
+            </div>
           </div>
-	</section>
-	{% endfor %}
-      </article>
-      <!-- end article -->
-    </main>
-    <!-- end main -->
 
+          {% elif slide.get('layout') == 'image-right' %}
+          <!-- Image Right Layout -->
+          <div class="r-hstack">
+            <div style="flex: 2; padding: 0 1em;">
+              {% if slide.get('title') %}
+              <h2>{{ slide.title }}</h2>
+              {% endif %}
+              {% if slide.get('subtitle') %}
+              <h3>{{ slide.subtitle }}</h3>
+              {% endif %}
+              {% if slide.get('content') %}
+              {{ slide.content }}
+              {% endif %}
+            </div>
+            <div style="flex: 1; padding: 0 1em;">
+              {% if slide.get('figure') %}
+              {{ slide.figure }}
+              {% endif %}
+            </div>
+          </div>
 
-    <!-- Required -->
-    <script src="https://cdn.jsdelivr.net/npm/webslides@1.5.0/static/js/webslides.min.js"></script>
-    <script>window.ws = new WebSlides();</script>
-    
+          {% elif slide.get('layout') == 'image-left' %}
+          <!-- Image Left Layout -->
+          <div class="r-hstack">
+            <div style="flex: 1; padding: 0 1em;">
+              {% if slide.get('figure') %}
+              {{ slide.figure }}
+              {% endif %}
+            </div>
+            <div style="flex: 2; padding: 0 1em;">
+              {% if slide.get('title') %}
+              <h2>{{ slide.title }}</h2>
+              {% endif %}
+              {% if slide.get('subtitle') %}
+              <h3>{{ slide.subtitle }}</h3>
+              {% endif %}
+              {% if slide.get('content') %}
+              {{ slide.content }}
+              {% endif %}
+            </div>
+          </div>
+
+          {% else %}
+          <!-- Default Layout -->
+          {% if slide.get('title') %}
+          <h2 {% if slide.get('head_style') %}style="{{ slide.head_style }}"{% endif %}>{{ slide.title }}</h2>
+          {% endif %}
+          {% if slide.get('subtitle') %}
+          <h3>{{ slide.subtitle }}</h3>
+          {% endif %}
+          {% if slide.get('content') %}
+          <div>{{ slide.content }}</div>
+          {% endif %}
+          {% if slide.get('figure') %}
+          <div>{{ slide.figure }}</div>
+          {% endif %}
+          {% endif %}
+
+          {% if slide.get('notes') %}
+          <!-- Speaker Notes -->
+          <aside class="notes">
+            {{ slide.notes }}
+          </aside>
+          {% endif %}
+
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/zoom/zoom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/search/search.js"></script>
+
+    <script>
+      // Initialize Reveal.js
+      Reveal.initialize({
+        hash: true,
+        width: {{ config.get('width', 1920) }},
+        height: {{ config.get('height', 1080) }},
+        margin: {{ config.get('margin', 0.04) }},
+        controls: {{ 'true' if config.get('controls', True) else 'false' }},
+        progress: {{ 'true' if config.get('progress', True) else 'false' }},
+        slideNumber: {{ 'true' if config.get('slide_number', True) else 'false' }},
+        transition: '{{ config.get('transition', 'slide') }}', // none/fade/slide/convex/concave/zoom
+
+        // Plugins
+        plugins: [ RevealHighlight, RevealNotes, RevealZoom, RevealSearch ]
+      });
+
+      // Enable MathJax
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      };
+    </script>
   </body>
 </html>

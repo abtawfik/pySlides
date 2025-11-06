@@ -6,10 +6,15 @@ from setuptools import find_packages, setup
 #####################
 # required packages #
 #####################
-install_reqs = ['Jinja2==2.11.2',
-                'toolz==0.10.0',
-                'plotly==4.12.0']
-extras_require={'all':['pytest==6.0.1']}
+install_reqs = ['Jinja2>=3.1.0',
+                'plotly>=5.18.0',
+                'matplotlib>=3.7.0']
+
+extras_require={
+    'export': ['playwright>=1.40.0'],  # For PDF export
+    'dev': ['pytest>=7.4.0'],
+    'all': ['playwright>=1.40.0', 'pytest>=7.4.0']
+}
 
 
 #####################################
@@ -23,8 +28,8 @@ def readme():
 # Setup package #
 #################
 setup(name='pyslides',
-      version='0.0.1',
-      description='Dynamically create interactive presentations',
+      version='2.0.0',
+      description='Create beautiful, interactive HTML presentations with Python',
       long_description=readme(),
       long_description_content_type="text/markdown",
       author='Ahmed Tawfik',
