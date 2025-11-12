@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Stack Science - Business Card Generator</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter and JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom CSS Variables for Brand Colors */
+        :root {
+            --navy-blue: #0A1628;
+            --professional-orange: #F97316;
+            --white: #FFFFFF;
+            --charcoal: #3D4656;
+        }
+
+        /* Font Families */
+        .font-jetbrains {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Business Card Container - 3.5" x 2" @ 300dpi = 1050px x 600px */
+        .business-card {
+            width: 1050px;
+            height: 600px;
+            position: relative;
+            background: white;
+            box-shadow: 0 10px 40px rgba(10, 22, 40, 0.15);
+        }
+
+        /* Subtle Grid Pattern Background */
+        .grid-pattern {
+            background-image:
+                linear-gradient(rgba(10, 22, 40, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 22, 40, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Orange Accent Line */
+        .accent-line {
+            background: linear-gradient(to bottom, var(--professional-orange), #ea580c);
+        }
+
+        /* Safe Area Guide (0.1" = 30px @ 300dpi) */
+        .safe-area-guide {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+            border: 2px dashed rgba(249, 115, 22, 0.3);
+            pointer-events: none;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .business-card {
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+            .safe-area-guide {
+                display: none;
+            }
+
+            @page {
+                size: 3.5in 2in;
+                margin: 0;
+            }
+        }
+
+        /* Logo Triangle SVG */
+        .logo-triangle {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Contact Icon Styles */
+        .contact-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        /* Hover Effects for Digital Version */
+        .contact-item {
+            transition: all 0.2s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateX(2px);
+            color: var(--professional-orange);
+        }
+
+        /* Card Flip Animation */
+        .card-container {
+            perspective: 2000px;
+        }
+
+        .card-flipper {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card-container.flipped .card-flipper {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Input Field Styles */
+        .editable-input {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .editable-input:focus {
+            outline: none;
+            border-color: var(--professional-orange);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--professional-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ea580c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--navy-blue);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(10, 22, 40, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-8 font-inter">
+
+    <!-- Header Section -->
+    <div class="max-w-6xl mx-auto mb-8 no-print">
+        <h1 class="text-4xl font-bold text-[#0A1628] font-jetbrains mb-2">Full Stack Science</h1>
+        <h2 class="text-2xl text-[#3D4656] mb-4">Business Card Generator</h2>
+        <p class="text-gray-600 mb-6">Customize your professional business card below. Click "Flip Card" to see the back design.</p>
+
+        <!-- Controls -->
+        <div class="flex gap-4 mb-6 flex-wrap">
+            <button onclick="flipCard()" class="btn btn-primary">Flip Card</button>
+            <button onclick="window.print()" class="btn btn-secondary">Print / Export PDF</button>
+            <button onclick="downloadAsImage()" class="btn btn-secondary">Download as PNG</button>
+            <button onclick="toggleGuides()" class="btn btn-secondary">Toggle Safe Area Guide</button>
+        </div>
+    </div>
+
+    <!-- Customization Form -->
+    <div class="max-w-6xl mx-auto mb-8 no-print bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold text-[#0A1628] mb-4 font-jetbrains">Customize Your Card</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <input type="text" id="nameInput" class="editable-input w-full" value="Sarah Chen" onchange="updateCard()">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input type="text" id="titleInput" class="editable-input w-full" value="Senior ML Consultant" onchange="updateCard()">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input type="email" id="emailInput" class="editable-input w-full" value="sarah@fullstackscience.com" onchange="updateCard()">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                <input type="tel" id="phoneInput" class="editable-input w-full" value="+1 (650) 555-0142" onchange="updateCard()">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                <input type="text" id="websiteInput" class="editable-input w-full" value="fullstackscience.com" onchange="updateCard()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Card Preview -->
+    <div class="max-w-6xl mx-auto">
+        <div class="card-container" id="cardContainer">
+            <div class="card-flipper mx-auto" style="width: 1050px; height: 600px;">
+
+                <!-- FRONT SIDE -->
+                <div class="card-front business-card">
+                    <!-- Grid Pattern Background -->
+                    <div class="grid-pattern absolute inset-0"></div>
+
+                    <!-- Orange Accent Line (Left Edge) -->
+                    <div class="accent-line absolute left-0 top-0 bottom-0" style="width: 6px;"></div>
+
+                    <!-- Safe Area Guide -->
+                    <div class="safe-area-guide" id="safeAreaGuide"></div>
+
+                    <!-- Content Container with Safe Margins -->
+                    <div class="absolute inset-0 flex" style="padding: 60px 60px 60px 80px;">
+
+                        <!-- Left Section: Logo + Name + Title (70%) -->
+                        <div class="flex-1 flex flex-col justify-between">
+                            <!-- Logo -->
+                            <div class="logo-triangle">
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Geometric Triangle Logo -->
+                                    <polygon points="50,15 85,75 15,75" fill="#0A1628" opacity="0.9"/>
+                                    <polygon points="50,15 85,75 68,75" fill="#3B82F6" opacity="0.7"/>
+                                    <polygon points="68,75 85,75 76.5,60" fill="#F97316" opacity="0.9"/>
+                                </svg>
+                            </div>
+
+                            <!-- Name and Title -->
+                            <div class="mt-auto">
+                                <h1 id="cardName" class="font-jetbrains font-bold text-[#0A1628] mb-2" style="font-size: 42px; line-height: 1.1; letter-spacing: -0.02em;">
+                                    Sarah Chen
+                                </h1>
+                                <p id="cardTitle" class="font-inter font-medium text-[#3D4656]" style="font-size: 20px; line-height: 1.3;">
+                                    Senior ML Consultant
+                                </p>
+
+                                <!-- Tagline -->
+                                <p class="font-inter text-[#F97316] font-semibold mt-4" style="font-size: 14px; letter-spacing: 0.05em;">
+                                    TURNING DATA INTO VALUE
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Right Section: Contact Info (30%) -->
+                        <div class="w-80 flex flex-col justify-end text-right">
+                            <div class="space-y-3">
+                                <!-- Email -->
+                                <div class="contact-item flex items-center justify-end">
+                                    <span id="cardEmail" class="font-inter text-[#3D4656]" style="font-size: 16px;">
+                                        sarah@fullstackscience.com
+                                    </span>
+                                    <svg class="contact-icon ml-2" fill="none" stroke="#F97316" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="contact-item flex items-center justify-end">
+                                    <span id="cardPhone" class="font-inter text-[#3D4656]" style="font-size: 16px;">
+                                        +1 (650) 555-0142
+                                    </span>
+                                    <svg class="contact-icon ml-2" fill="none" stroke="#F97316" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                </div>
+
+                                <!-- Website -->
+                                <div class="contact-item flex items-center justify-end">
+                                    <span id="cardWebsite" class="font-inter text-[#3D4656]" style="font-size: 16px;">
+                                        fullstackscience.com
+                                    </span>
+                                    <svg class="contact-icon ml-2" fill="none" stroke="#F97316" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BACK SIDE -->
+                <div class="card-back business-card" style="background: linear-gradient(135deg, #0A1628 0%, #1e293b 100%);">
+                    <!-- Content Container -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
+
+                        <!-- Large Logo -->
+                        <div style="width: 200px; height: 200px; margin-bottom: 40px;">
+                            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Geometric Triangle Logo - Larger Version -->
+                                <polygon points="50,15 85,75 15,75" fill="#FFFFFF" opacity="0.9"/>
+                                <polygon points="50,15 85,75 68,75" fill="#3B82F6" opacity="0.7"/>
+                                <polygon points="68,75 85,75 76.5,60" fill="#F97316" opacity="0.9"/>
+                            </svg>
+                        </div>
+
+                        <!-- Company Name -->
+                        <h2 class="font-jetbrains font-bold text-white mb-4" style="font-size: 48px; letter-spacing: -0.02em;">
+                            Full Stack Science
+                        </h2>
+
+                        <!-- Tagline -->
+                        <p class="font-inter text-[#F97316] font-semibold" style="font-size: 20px; letter-spacing: 0.1em;">
+                            TURNING DATA INTO VALUE
+                        </p>
+
+                        <!-- Decorative Line -->
+                        <div class="mt-8 bg-[#F97316] rounded-full" style="width: 120px; height: 4px;"></div>
+
+                        <!-- Subtitle -->
+                        <p class="font-inter text-gray-300 mt-6" style="font-size: 16px; max-width: 600px; line-height: 1.6;">
+                            Professional AI/ML Consulting • Question-First Approach • Results-Oriented
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="max-w-6xl mx-auto mt-8 no-print bg-blue-50 p-6 rounded-lg">
+        <h3 class="text-lg font-semibold text-[#0A1628] mb-3 font-jetbrains">Export Instructions</h3>
+        <div class="text-gray-700 space-y-2">
+            <p><strong>To export as PDF:</strong> Click "Print / Export PDF" button, then select "Save as PDF" in your browser's print dialog. Make sure to set margins to "None" and paper size to "Custom" (3.5" × 2").</p>
+            <p><strong>To export as PNG:</strong> Click "Download as PNG" button to save the card as a high-resolution image (1050×600px @ 300dpi).</p>
+            <p><strong>Safe Area Guide:</strong> The dashed orange line shows the safe printing area. Keep important content within this boundary (0.1" margin from edges).</p>
+            <p><strong>Printing Tips:</strong> Use high-quality cardstock (minimum 300gsm) for best results. Professional printing services can handle the exact 3.5" × 2" dimensions.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="max-w-6xl mx-auto mt-8 text-center text-gray-500 text-sm no-print">
+        <p>Full Stack Science Business Card Generator • Created with pySlides</p>
+        <p class="mt-2">© 2025 Full Stack Science • All rights reserved</p>
+    </div>
+
+    <script>
+        // Card Flip Functionality
+        function flipCard() {
+            const container = document.getElementById('cardContainer');
+            container.classList.toggle('flipped');
+        }
+
+        // Toggle Safe Area Guide
+        function toggleGuides() {
+            const guide = document.getElementById('safeAreaGuide');
+            guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Update Card Content
+        function updateCard() {
+            document.getElementById('cardName').textContent = document.getElementById('nameInput').value;
+            document.getElementById('cardTitle').textContent = document.getElementById('titleInput').value;
+            document.getElementById('cardEmail').textContent = document.getElementById('emailInput').value;
+            document.getElementById('cardPhone').textContent = document.getElementById('phoneInput').value;
+            document.getElementById('cardWebsite').textContent = document.getElementById('websiteInput').value;
+        }
+
+        // Download as PNG using html2canvas (if available)
+        async function downloadAsImage() {
+            // Check if html2canvas is available
+            if (typeof html2canvas === 'undefined') {
+                // Load html2canvas dynamically
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = () => captureCard();
+                document.head.appendChild(script);
+            } else {
+                captureCard();
+            }
+        }
+
+        async function captureCard() {
+            const cardElement = document.querySelector('.card-front');
+            const canvas = await html2canvas(cardElement, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                width: 1050,
+                height: 600
+            });
+
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = 'fullstackscience-business-card.png';
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Initialize card on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCard();
+        });
+    </script>
+</body>
+</html>
